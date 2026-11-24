@@ -1,0 +1,5 @@
+# floe-lab stack. Later changes add services; every one gets a healthcheck and
+# publishes ports on 127.0.0.1 only.
+name: floe-lab
+
+services: {}

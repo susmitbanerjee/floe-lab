@@ -1,0 +1,2 @@
+# Keep LF everywhere so shell scripts and the Makefile work on every OS.
+* text=auto eol=lf

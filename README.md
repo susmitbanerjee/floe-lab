@@ -20,4 +20,8 @@ $ make help
   logs       Follow the stack's logs
   smoke      Rerun the S3 and catalog smoke test against the running stack
   test-stack Run the stack tests (they reset the stack and delete its data volumes)
+  data       Write sales.orders for PROFILE=unit|ci|small|bench (CATALOG=lab|glue, FORCE=1)
+  append     Append DAYS=n days after the last one, or ROWS=n rows to the last day
+  data-tpch  Write the 8 TPC-H tables at SF=0.01 (or SF=1) into namespace tpch_sf<SF>
+  golden     Regenerate tests/golden/unit.json (only when ADR 0002's data model changes)
 ```

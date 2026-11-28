@@ -13,9 +13,10 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import pyarrow.fs as pafs
-from pyiceberg.catalog import Catalog, load_catalog
+from pyiceberg.catalog import Catalog
 
 from datagen.bootstrap import s3_client
+from datagen.catalog import open_catalog
 from datagen.settings import Settings, SettingsError
 
 if TYPE_CHECKING:
@@ -235,12 +236,7 @@ class CatalogChecks:
         ]
 
     def connect(self) -> None:
-        self.catalog = load_catalog(
-            self.settings.warehouse,
-            type="rest",
-            uri=self.settings.rest_catalog_url,
-            warehouse=self.settings.warehouse,
-        )
+        self.catalog = open_catalog(self.settings, "lab")
 
     def _catalog(self) -> Catalog:
         if self.catalog is None:

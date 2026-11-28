@@ -28,7 +28,12 @@ jobs:
       - run: make lint
 
   test:
-    runs-on: ubuntu-24.04
+    # Unit tests on both architectures: the golden data hashes must match on x86_64 and arm64.
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -30,6 +30,9 @@ class Settings:
     catalog_url: str = "http://127.0.0.1:8181"
     warehouse: str = "lab"
     namespace: str = "sales"
+    # AWS Glue catalog (--catalog glue). AWS credentials come from the caller's own profile.
+    glue_region: str = ""
+    glue_warehouse: str = ""
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -44,6 +47,10 @@ class Settings:
             s3_access_key=env["FLOE_LAB_S3_ACCESS_KEY"],
             s3_secret_key=env["FLOE_LAB_S3_SECRET_KEY"],
             s3_region=env.get("FLOE_LAB_S3_REGION", cls.s3_region),
+            s3_endpoint=env.get("FLOE_LAB_S3_ENDPOINT", cls.s3_endpoint),
+            catalog_url=env.get("FLOE_LAB_CATALOG_URL", cls.catalog_url),
+            glue_region=env.get("FLOE_LAB_GLUE_REGION", ""),
+            glue_warehouse=env.get("FLOE_LAB_GLUE_WAREHOUSE", ""),
         )
 
     @property

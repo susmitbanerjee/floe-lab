@@ -8,8 +8,10 @@ license-files = ["LICENSE"]
 requires-python = "==3.14.*"
 dependencies = [
   "boto3>=1.44.13",
+  "duckdb>=2.0.1",
+  "numpy>=2.5.5",
   "pyarrow>=26.0.1",
-  "pyiceberg>=0.12.0",
+  "pyiceberg[pyiceberg-core]>=0.12.0",
   "requests>=2.34.2",
 ]
 
@@ -44,7 +46,7 @@ select = ["E", "F", "I", "B", "UP", "S", "SIM", "PT"]
 # pytest uses bare asserts, and tests use fake credentials.
 "tests/**" = ["S101", "S106"]
 # Stack tests run `make` and `docker` from PATH with fixed arguments, by design.
-"tests/test_stack.py" = ["S603"]
+"tests/test_stack*.py" = ["S603"]
 
 [tool.mypy]
 strict = true

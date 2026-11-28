@@ -1,0 +1,17 @@
+{
+  "command": "make golden (python -m datagen.generate golden --out tests/golden/unit.json)",
+  "profile": "unit",
+  "seed": 20261118,
+  "anchor_date": "2026-11-18",
+  "tool_versions": {
+    "python": "3.14.3",
+    "numpy": "2.5.5",
+    "pyarrow": "26.0.1"
+  },
+  "batches": {
+    "2026-11-17/file-0": "50fb4209efcee4b477c26f1f3418b6e53ca1595350b946f7403d006502bb28a4",
+    "2026-11-17/file-1": "ae55c6a6805b596e5f4d4e1db3b6f0079d0e69f3172c135a57cbc5ac72028e49",
+    "2026-11-18/file-0": "2edce628037f4358e2cb3e2c4d8ccd7ce657f214527acc58d577f76b672bd921",
+    "2026-11-18/file-1": "843c3ea24ce908afca76097ddf314fbf38ee5ade214d7705d742c57f6b18073b"
+  }
+}

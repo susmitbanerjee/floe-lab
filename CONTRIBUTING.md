@@ -7,6 +7,10 @@
   uv installs the Python pinned in `.python-version`.
 - Docker with Compose v2. shellcheck, hadolint, terraform, tflint and gitleaks run in
   containers pinned by digest, so you do not install them.
+- On Windows, Smart App Control (Windows Security, App & browser control) can block the
+  native modules of mypy, pyarrow, pyiceberg-core, pyroaring and duckdb with "An Application
+  Control policy has blocked this file". Turn it off, or run the targets from WSL or a Linux
+  container.
 
 ## Make targets
 
@@ -24,6 +28,10 @@ Make is the only entry point. `make help` lists every target:
 | `logs`  | Follow the stack's logs |
 | `smoke` | Rerun the S3 and catalog smoke test |
 | `test-stack` | Stack tests; they run `make reset`, so they delete the lab's data |
+| `data`  | Write `sales.orders` for `PROFILE=unit\|ci\|small\|bench` and `data/manifest-<profile>.json`. Refuses if the table exists; `FORCE=1` rebuilds. `CATALOG=glue` targets AWS Glue |
+| `append` | `DAYS=n` adds days after the last one; `ROWS=n` adds rows to the last day. One snapshot each |
+| `data-tpch` | TPC-H at `SF=0.01` (default) or `SF=1` into namespace `tpch_sf0_01` / `tpch_sf1` |
+| `golden` | Regenerate `tests/golden/unit.json`; only when ADR 0002's data model changes |
 
 Before you open a pull request, run `make lint test` and paste the output in the description.
 

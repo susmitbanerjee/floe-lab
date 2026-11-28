@@ -53,6 +53,11 @@ exists. The smoke test removes the prefix with `delete_dir` to clean those up.
   volume, so `make down` keeps it and `make reset` deletes it.
 - The lab uses RustFS root credentials as static keys (fake values in `.env.example`). The
   warehouse has STS and remote signing off, so clients bring those keys themselves.
+- Under heavy parallel writes on a slow disk (Docker Desktop's volume while Lakekeeper purged a
+  1,350-file table), RustFS once answered CompleteMultipartUpload with 503
+  ServiceUnavailable (`x-rustfs-error-cause: namespace_lock_timeout`, `Retry-After: 1`). 503 is
+  retryable in S3, so the lab's Iceberg clients use 10 retry attempts instead of Arrow's 3
+  (`datagen.catalog.LabS3RetryStrategy`). If 503s persist, revisit this decision.
 - RustFS 1.0.x is recent (1.0.2 shipped on 2026-10-16). If a release breaks the smoke test,
-  pin back or switch to SeaweedFS and update this ADR. Only `compose.yaml` and the internal endpoint in
-  `datagen/src/datagen/settings.py` name the store.
+  pin back or switch to SeaweedFS and update this ADR. Only `compose.yaml` and the internal
+  endpoint in `datagen/src/datagen/settings.py` name the store.

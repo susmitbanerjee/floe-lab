@@ -59,15 +59,17 @@ def test_compose_ports_bind_to_loopback_only() -> None:
     assert succeeded(result)
     services = json.loads(result.stdout)["services"]
     published = {
-        name: [port.get("host_ip") for port in service.get("ports", [])]
+        name: [(port.get("host_ip"), port.get("published")) for port in service.get("ports", [])]
         for name, service in services.items()
     }
+    # Lakekeeper shares RustFS's network namespace (ADR 0005), so RustFS publishes its port.
     assert published == {
-        "rustfs": ["127.0.0.1"],
+        "rustfs": [("127.0.0.1", "9000"), ("127.0.0.1", "8181")],
         "postgres": [],
         "lakekeeper-migrate": [],
-        "lakekeeper": ["127.0.0.1"],
+        "lakekeeper": [],
     }
+    assert services["lakekeeper"]["network_mode"] == "service:rustfs"
 
 
 def test_make_up_from_scratch(first_up: tuple[subprocess.CompletedProcess[str], float]) -> None:

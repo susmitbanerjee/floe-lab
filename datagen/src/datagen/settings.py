@@ -22,9 +22,12 @@ class Settings:
     s3_access_key: str
     s3_secret_key: str
     s3_region: str = "local-01"
-    # The S3 API as the host sees it, and as containers on the Compose network see it.
+    # The S3 API as this client reaches it (override with ICEBLINK_LAB_S3_ENDPOINT).
     s3_endpoint: str = "http://127.0.0.1:9000"
-    s3_internal_endpoint: str = "http://rustfs:9000"
+    # The endpoint in the warehouse's storage profile. Lakekeeper uses it and hands it to
+    # every client, so it must work for both: Lakekeeper shares RustFS's network namespace
+    # (ADR 0005), which makes 127.0.0.1:9000 the store from inside it and from the host.
+    warehouse_endpoint: str = "http://127.0.0.1:9000"
     bucket: str = "iceblink-lab"
     key_prefix: str = "warehouse/"
     catalog_url: str = "http://127.0.0.1:8181"

@@ -79,6 +79,15 @@ def test_ci_profile_writes_in_under_a_minute(
     assert seconds < CI_BUDGET_SECONDS, f"make data PROFILE=ci took {seconds:.0f}s"
 
 
+def test_catalog_hands_clients_the_host_endpoint(
+    ci_data: tuple[subprocess.CompletedProcess[str], float],
+) -> None:
+    """Clients use the endpoint in the table config, so it must be reachable from the host."""
+    assert ci_data[0].returncode == 0
+    table = catalog().load_table(ORDERS)
+    assert table.io.properties["s3.endpoint"].rstrip("/") == "http://127.0.0.1:9000"
+
+
 def test_pyiceberg_reads_back_the_manifest_row_count(
     ci_data: tuple[subprocess.CompletedProcess[str], float],
 ) -> None:

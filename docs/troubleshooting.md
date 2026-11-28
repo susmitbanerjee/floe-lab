@@ -20,3 +20,14 @@ Until you do, `make up` fails because the old containers still hold ports 9000 a
 Python commands fail with "missing ICEBLINK_LAB_S3_ACCESS_KEY" while `.env` has the old names.
 
 This page is on the legacy-name guard's allow-list because it has to name the old volumes.
+
+## "warehouse 'lab' exists on (..., 'http://rustfs:9000')"
+
+A lab bootstrapped before ADR 0005 advertises the store's Compose-only name to clients, so
+writes from the host fail with `NETWORK_CONNECTION during CreateMultipartUpload`. Rebuild it:
+
+```bash
+make reset
+make up
+make data PROFILE=ci
+```

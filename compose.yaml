@@ -1,5 +1,8 @@
 # iceblink-lab stack: an S3-compatible store (RustFS) and the Lakekeeper Iceberg REST catalog.
 # Published ports bind to 127.0.0.1 only. Postgres is not published at all.
+# Lakekeeper shares RustFS's network namespace (ADR 0005), so http://127.0.0.1:9000 is the
+# store for Lakekeeper and for clients on the host alike, and that is the endpoint the
+# warehouse hands to every client.
 # Values come from .env (see .env.example); `make up` creates .env when it is missing.
 name: iceblink-lab
 
@@ -13,6 +16,8 @@ x-lakekeeper-env: &lakekeeper-env
   # Lab only: no authentication (no OpenID provider) and no authorization.
   LAKEKEEPER__AUTHZ_BACKEND: allowall
   RUST_LOG: info
+  # Metrics default to port 9000, which RustFS holds in the shared network namespace.
+  LAKEKEEPER__METRICS__PORT: "9100"
 
 services:
   rustfs:
@@ -28,7 +33,8 @@ services:
     volumes:
       - rustfs-data:/data
     ports:
-      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9000:9000 # S3 API
+      - 127.0.0.1:8181:8181 # Lakekeeper, which runs in this service's network namespace
     healthcheck:
       test: [CMD, curl, -fsS, -o, /dev/null, http://127.0.0.1:9000/health]
       interval: 2s
@@ -70,8 +76,8 @@ services:
     <<: *hardening
     command: [serve]
     environment: *lakekeeper-env
-    ports:
-      - 127.0.0.1:8181:8181
+    # Shares RustFS's network: 127.0.0.1:9000 reaches the store, 8181 is published there.
+    network_mode: service:rustfs
     healthcheck:
       test: [CMD, /home/nonroot/lakekeeper, healthcheck]
       interval: 2s

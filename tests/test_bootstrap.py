@@ -26,7 +26,7 @@ SETTINGS = Settings(
     s3_access_key="test-access",
     s3_secret_key="test-secret",
     s3_region="test-region",
-    s3_internal_endpoint="http://store:9000",
+    warehouse_endpoint="http://store:9000",
     bucket="test-bucket",
     key_prefix="tables/",
     catalog_url="http://catalog:8181",
@@ -190,11 +190,31 @@ def test_warehouse_already_exists_error_is_success() -> None:
 def test_warehouse_in_listing_is_not_created_again() -> None:
     listed = {
         "name": "test-warehouse",
-        "storage-profile": {"bucket": "test-bucket", "key-prefix": "tables"},
+        # Lakekeeper stores the prefix without its slash and the endpoint with one.
+        "storage-profile": {
+            "bucket": "test-bucket",
+            "key-prefix": "tables",
+            "endpoint": "http://store:9000/",
+        },
     }
     http = FakeHttp({f"{MGMT}/warehouse": response(200, {"warehouses": [listed]})}, {})
     assert ensure_warehouse(http, SETTINGS) == EXISTS
     assert http.posted == []
+
+
+def test_warehouse_with_an_old_endpoint_raises() -> None:
+    # A lab bootstrapped before ADR 0005 advertises the Compose-only name to clients.
+    listed = {
+        "name": "test-warehouse",
+        "storage-profile": {
+            "bucket": "test-bucket",
+            "key-prefix": "tables",
+            "endpoint": "http://rustfs:9000/",
+        },
+    }
+    http = FakeHttp({f"{MGMT}/warehouse": response(200, {"warehouses": [listed]})}, {})
+    with pytest.raises(BootstrapError, match="make reset"):
+        ensure_warehouse(http, SETTINGS)
 
 
 def test_warehouse_on_another_bucket_raises() -> None:

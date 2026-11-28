@@ -28,7 +28,7 @@ PARTS = 3
 OBJECT_SIZE = 4096
 LIST_OBJECTS = 5
 PAGE_SIZE = 2
-SEED = b"floe-lab-smoke-v1"
+SEED = b"iceblink-lab-smoke-v1"
 
 Check = tuple[str, str, Callable[[], None]]
 

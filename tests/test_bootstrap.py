@@ -78,15 +78,17 @@ class FakeBuckets:
 
 
 def test_settings_require_credentials() -> None:
-    with pytest.raises(SettingsError, match="FLOE_LAB_S3_ACCESS_KEY, FLOE_LAB_S3_SECRET_KEY"):
+    with pytest.raises(
+        SettingsError, match="ICEBLINK_LAB_S3_ACCESS_KEY, ICEBLINK_LAB_S3_SECRET_KEY"
+    ):
         Settings.from_env({})
 
 
 def test_settings_read_from_env() -> None:
     env = {
-        "FLOE_LAB_S3_ACCESS_KEY": "a",
-        "FLOE_LAB_S3_SECRET_KEY": "b",
-        "FLOE_LAB_S3_REGION": "r",
+        "ICEBLINK_LAB_S3_ACCESS_KEY": "a",
+        "ICEBLINK_LAB_S3_SECRET_KEY": "b",
+        "ICEBLINK_LAB_S3_REGION": "r",
     }
     settings = Settings.from_env(env)
     assert (settings.s3_access_key, settings.s3_secret_key, settings.s3_region) == ("a", "b", "r")

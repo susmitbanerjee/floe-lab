@@ -64,8 +64,12 @@ ORDERS_SCHEMA = Schema(
 ORDERS_SPEC = PartitionSpec(
     PartitionField(source_id=7, field_id=1000, transform=DayTransform(), name="created_at_day")
 )
-PROP_PROFILE, PROP_SEED, PROP_ANCHOR = "floe-lab.profile", "floe-lab.seed", "floe-lab.anchor-date"
-SNAP_DAY, SNAP_KIND = "floe-lab.day", "floe-lab.kind"
+PROP_PROFILE, PROP_SEED, PROP_ANCHOR = (
+    "iceblink-lab.profile",
+    "iceblink-lab.seed",
+    "iceblink-lab.anchor-date",
+)
+SNAP_DAY, SNAP_KIND = "iceblink-lab.day", "iceblink-lab.kind"
 KIND_DAY, KIND_ROWS = "day", "rows"
 DATA_DIR = Path("data")
 
@@ -221,7 +225,7 @@ def build_manifest(
 def tool_versions(settings: Settings, catalog_kind: str) -> dict[str, str]:
     versions = {
         "python": platform.python_version(),
-        **{name: version(name) for name in ("floe-lab", "numpy", "pyarrow", "pyiceberg")},
+        **{name: version(name) for name in ("iceblink-lab", "numpy", "pyarrow", "pyiceberg")},
     }
     if catalog_kind == "lab":
         info = requests.get(f"{settings.management_url}/info", timeout=30)

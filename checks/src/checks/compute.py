@@ -4,7 +4,7 @@
     python -m checks.compute tpch --sf 0.01 --out checks/expected/tpch-sf0.01
     python -m checks.compute verify --profile ci   # recompute into a temp dir and diff
 
-DuckDB and pyiceberg are independent of Floe, and the queries use fixed timestamps, so the
+DuckDB and pyiceberg are independent of Iceblink, and the queries use fixed timestamps, so the
 answers are only as moving as the data. See docs/adr/0003-expected-answers.md.
 """
 
@@ -331,7 +331,7 @@ def _versions(con: duckdb.DuckDBPyConnection, settings: Settings) -> dict[str, s
         "python": platform.python_version(),
         "duckdb": duckdb.__version__,
         "duckdb_httpfs": _extension_version(con, "httpfs"),
-        **{name: version(name) for name in ("floe-lab", "pyiceberg", "pyarrow")},
+        **{name: version(name) for name in ("iceblink-lab", "pyiceberg", "pyarrow")},
         "lakekeeper": str(info.json().get("lakekeeper-version")),
     }
 

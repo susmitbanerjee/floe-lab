@@ -4,11 +4,11 @@
   "seed": 20261118,
   "anchor_date": "2026-11-18",
   "table": "sales.orders",
-  "table_uuid": "01a22050-ae0e-73e5-adb6-882ea0b31b27",
-  "snapshot_id": 6211518675628177669,
+  "table_uuid": "01a22194-4e91-724a-a94d-1b93fc94f1fb",
+  "snapshot_id": 1552646980366414284,
   "snapshot_ids": [
-    6211518675628177669,
-    119018718769936273
+    1552646980366414284,
+    7619067989734085018
   ],
   "data_files": 6,
   "total_rows": 400,
@@ -17,7 +17,7 @@
     "count_all.sql": "6b44d973b1cfa988dc1c28990082363fbf26a0f800ed75620c7252eee8ee18d0",
     "late_day.sql": "42fa6a56a1584404efb9c33ce0e109415db57892c0f70f0af675a5d9fea8e88c",
     "point_order.sql": "8ae02c7ad43b1898fa120d94be33c49d117c3b3581110eb5a4645a0a64810d21",
-    "region_7d.sql": "20ca13368ff8c81114680d517403b5846738753ea8b163535b288e6a2f2522fd",
+    "region_7d.sql": "326db182b88f27bdeb93d0aa05f1650e7193c948842dfbf68a9f9913d66fecaf",
     "status_mix.sql": "db187c6ed11eb1fb446fd4183c73f9a59d3b7e4957b55d19057662b5b3e6fe22",
     "tenant_one.sql": "ea8916de2eee2d85119ef299544190e7f843fc4024609cf7dad49221b70d799e"
   },
@@ -26,7 +26,7 @@
     "python": "3.14.3",
     "duckdb": "2.0.1",
     "duckdb_httpfs": "f71cfdb4bf",
-    "floe-lab": "0.0.0",
+    "iceblink-lab": "0.0.0",
     "pyiceberg": "0.12.0",
     "pyarrow": "26.0.1",
     "lakekeeper": "0.15.1"

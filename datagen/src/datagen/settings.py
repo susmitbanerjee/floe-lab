@@ -10,7 +10,7 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass
 
-REQUIRED = ("FLOE_LAB_S3_ACCESS_KEY", "FLOE_LAB_S3_SECRET_KEY")
+REQUIRED = ("ICEBLINK_LAB_S3_ACCESS_KEY", "ICEBLINK_LAB_S3_SECRET_KEY")
 
 
 class SettingsError(RuntimeError):
@@ -25,7 +25,7 @@ class Settings:
     # The S3 API as the host sees it, and as containers on the Compose network see it.
     s3_endpoint: str = "http://127.0.0.1:9000"
     s3_internal_endpoint: str = "http://rustfs:9000"
-    bucket: str = "floe-lab"
+    bucket: str = "iceblink-lab"
     key_prefix: str = "warehouse/"
     catalog_url: str = "http://127.0.0.1:8181"
     warehouse: str = "lab"
@@ -44,13 +44,13 @@ class Settings:
                 "Run through make (it loads .env, created from .env.example by `make up`)."
             )
         return cls(
-            s3_access_key=env["FLOE_LAB_S3_ACCESS_KEY"],
-            s3_secret_key=env["FLOE_LAB_S3_SECRET_KEY"],
-            s3_region=env.get("FLOE_LAB_S3_REGION", cls.s3_region),
-            s3_endpoint=env.get("FLOE_LAB_S3_ENDPOINT", cls.s3_endpoint),
-            catalog_url=env.get("FLOE_LAB_CATALOG_URL", cls.catalog_url),
-            glue_region=env.get("FLOE_LAB_GLUE_REGION", ""),
-            glue_warehouse=env.get("FLOE_LAB_GLUE_WAREHOUSE", ""),
+            s3_access_key=env["ICEBLINK_LAB_S3_ACCESS_KEY"],
+            s3_secret_key=env["ICEBLINK_LAB_S3_SECRET_KEY"],
+            s3_region=env.get("ICEBLINK_LAB_S3_REGION", cls.s3_region),
+            s3_endpoint=env.get("ICEBLINK_LAB_S3_ENDPOINT", cls.s3_endpoint),
+            catalog_url=env.get("ICEBLINK_LAB_CATALOG_URL", cls.catalog_url),
+            glue_region=env.get("ICEBLINK_LAB_GLUE_REGION", ""),
+            glue_warehouse=env.get("ICEBLINK_LAB_GLUE_WAREHOUSE", ""),
         )
 
     @property

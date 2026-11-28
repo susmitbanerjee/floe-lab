@@ -12,7 +12,7 @@ from datagen.catalog import (
 )
 from datagen.settings import Settings, SettingsError
 
-CREDENTIALS = {"FLOE_LAB_S3_ACCESS_KEY": "a", "FLOE_LAB_S3_SECRET_KEY": "b"}
+CREDENTIALS = {"ICEBLINK_LAB_S3_ACCESS_KEY": "a", "ICEBLINK_LAB_S3_SECRET_KEY": "b"}
 
 
 def test_retry_strategy_resolves_by_name_like_pyiceberg_does() -> None:
@@ -26,8 +26,8 @@ def test_endpoints_can_be_overridden_for_containers() -> None:
     settings = Settings.from_env(
         CREDENTIALS
         | {
-            "FLOE_LAB_S3_ENDPOINT": "http://rustfs:9000",
-            "FLOE_LAB_CATALOG_URL": "http://lakekeeper:8181",
+            "ICEBLINK_LAB_S3_ENDPOINT": "http://rustfs:9000",
+            "ICEBLINK_LAB_CATALOG_URL": "http://lakekeeper:8181",
         }
     )
     assert settings.s3_endpoint == "http://rustfs:9000"
@@ -41,7 +41,7 @@ def test_defaults_point_at_the_host() -> None:
 
 
 def test_glue_needs_region_and_warehouse() -> None:
-    with pytest.raises(SettingsError, match="FLOE_LAB_GLUE_REGION"):
+    with pytest.raises(SettingsError, match="ICEBLINK_LAB_GLUE_REGION"):
         open_catalog(Settings.from_env(CREDENTIALS), "glue")
 
 

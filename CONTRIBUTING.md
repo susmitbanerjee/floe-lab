@@ -19,7 +19,7 @@ Make is the only entry point. `make help` lists every target:
 | Target  | What it does |
 | ------- | ------------ |
 | `setup` | Create `.venv` from `uv.lock` |
-| `lint`  | ruff format and check, mypy, shellcheck, hadolint, `docker compose config`, terraform fmt and tflint (when `aws/` has `.tf` files), gitleaks |
+| `lint`  | the legacy-name guard (`scripts/check-legacy-name.sh`, ADR 0004), ruff format and check, mypy, shellcheck, hadolint, `docker compose config`, terraform fmt and tflint (when `aws/` has `.tf` files), gitleaks |
 | `test`  | pytest, skipping tests marked `stack` |
 | `fmt`   | ruff format and safe fixes |
 | `up`    | Start RustFS, Postgres and Lakekeeper on 127.0.0.1, bootstrap the bucket and the `lab` warehouse, run the smoke test. Creates `.env` from `.env.example` if missing |
@@ -35,8 +35,8 @@ Make is the only entry point. `make help` lists every target:
 | `check` | Expected answers for `PROFILE` in `checks/expected/<profile>/`: DuckDB over the Parquet files pyiceberg lists, plus `files.json` and `PROVENANCE.json` |
 | `check-tpch` | The 22 TPC-H queries and answers for `SF=0.01` or `SF=1` from DuckDB's tpch extension |
 | `verify` | Recompute `PROFILE`'s and the TPC-H answers and fail on any difference |
-| `check-floe` | Run `PROFILE`'s queries through a running Floe (`FLOE_DSN`, default `postgresql://127.0.0.1:5432/lake`) |
-| `export` | Copy the TPC-H and orders answers into `FLOE=../floe`'s `tests/expected/` and nothing else |
+| `check-engine` | Run `PROFILE`'s queries through a running Iceblink (`ICEBLINK_DSN`, default `postgresql://127.0.0.1:5432/lake`) |
+| `export` | Copy the TPC-H and orders answers into `ENGINE=../iceblink`'s `tests/expected/` and nothing else |
 
 Before you open a pull request, run `make lint test` and paste the output in the description.
 

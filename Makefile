@@ -1,4 +1,4 @@
-# floe-lab: every task is a make target. `make help` lists them.
+# iceblink-lab: every task is a make target. `make help` lists them.
 SHELL := bash
 .SHELLFLAGS := -euo pipefail -c
 .DEFAULT_GOAL := help
@@ -24,8 +24,9 @@ GITLEAKS_IMAGE := ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a
 # Read-only mount of the repo, no network.
 DOCKER_RUN := docker run --rm --network none -v "$(CURDIR):/src:ro" -w /src
 
-# Compose for targets that only stop or inspect the stack: .env when present, else the example.
-COMPOSE := docker compose --env-file $(if $(wildcard .env),.env,.env.example)
+# Compose for targets that only stop or inspect the stack. They need no real values, so they
+# read the example and still work when .env is missing or holds out-of-date variable names.
+COMPOSE := docker compose --env-file .env.example
 
 # Files git tracks or would track (respects .gitignore, so .venv and data/ are skipped).
 repo_files = $(shell git ls-files --cached --others --exclude-standard -- $(1))
@@ -34,18 +35,20 @@ repo_files = $(shell git ls-files --cached --others --exclude-standard -- $(1))
 PROFILE ?= small
 CATALOG ?= lab
 SF ?= 0.01
-FLOE ?= ../floe
+ENGINE ?= ../iceblink
 FORCE_FLAG = $(if $(filter 1,$(FORCE)),--force)
 
-.PHONY: help setup lint test fmt up down reset logs smoke test-stack data append data-tpch golden \n	check check-tpch verify check-floe export
+.PHONY: help setup lint test fmt up down reset logs smoke test-stack data append data-tpch golden \
+	check check-tpch verify check-engine export
 
 help: ## List every target with its one-line description
-	@awk 'BEGIN {FS = ":.*## "} /^[a-z][a-z-]*:.*## / {printf "  %-10s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*## "} /^[a-z][a-z-]*:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-setup: ## Create .venv from uv.lock (Python, dev tools, floe-lab packages)
+setup: ## Create .venv from uv.lock (Python, dev tools, iceblink-lab packages)
 	uv sync --locked
 
 lint: ## Run every linter and secret scan; fails on the first problem
+	bash scripts/check-legacy-name.sh
 	$(UV_RUN) ruff format --check .
 	$(UV_RUN) ruff check .
 	$(UV_RUN) python -m mypy
@@ -111,11 +114,11 @@ check-tpch: ## Write the 22 TPC-H queries and answers for SF=0.01 or SF=1 from D
 verify: .env ## Recompute PROFILE's and TPC-H answers and fail on any difference
 	$(UV_RUN) --env-file .env python -m checks.compute verify --profile $(PROFILE)
 
-check-floe: ## Run PROFILE's queries through Floe (FLOE_DSN) and report pass or fail per query
-	$(UV_RUN) python -m checks.run_floe --profile $(PROFILE)
+check-engine: ## Run PROFILE's queries through Iceblink (ICEBLINK_DSN) and report each result
+	$(UV_RUN) python -m checks.run_engine --profile $(PROFILE)
 
-export: ## Copy TPC-H and orders answers into FLOE=../floe tests/expected/ (nothing else)
-	$(UV_RUN) python -m checks.export --floe $(FLOE)
+export: ## Copy TPC-H and orders answers into ENGINE=../iceblink tests/expected/ only
+	$(UV_RUN) python -m checks.export --engine $(ENGINE)
 
 # $(call lint_files,name,git pathspecs,image and command): run the tool on matching files, or skip.
 define lint_files

@@ -5,9 +5,9 @@
 
 ## Context
 
-Floe reads Iceberg tables through an Iceberg REST catalog (Lakekeeper) from S3-compatible
+Iceblink reads Iceberg tables through an Iceberg REST catalog (Lakekeeper) from S3-compatible
 storage. The lab needs that storage on one laptop and in CI, started by `make up`, listening on
-127.0.0.1 only. The store must handle what Floe and the Iceberg clients do: put, head, get,
+127.0.0.1 only. The store must handle what Iceblink and the Iceberg clients do: put, head, get,
 range reads, ListObjectsV2 with prefix and pagination, multipart upload, and delete.
 
 MinIO's community edition is source-only and archived upstream, so it is out.

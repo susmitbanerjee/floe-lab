@@ -1,8 +1,9 @@
-# floe-lab engineering rules
+# iceblink-lab engineering rules
 
 ## Purpose
-floe-lab is Floe's test bench: storage, catalog, data with known answers, and benchmarks.
-It must never become a second product. If a feature doesn't help test Floe, it doesn't belong here.
+iceblink-lab is Iceblink's test bench: storage, catalog, data with known answers, and benchmarks.
+It must never become a second product. If a feature doesn't help test Iceblink, it doesn't
+belong here.
 
 ## Reproducible
 - A clean checkout plus `make up && make data PROFILE=small && make check` must give the same
@@ -36,12 +37,12 @@ It must never become a second product. If a feature doesn't help test Floe, it d
 - Images pinned by digest, with the human-readable tag in a comment.
 - Every published port binds to 127.0.0.1 only.
 - Every service has a healthcheck; `docker compose up --wait` must succeed or fail clearly.
-- Lab credentials are obviously fake (e.g. floe-lab-access / floe-lab-secret), live in
+- Lab credentials are obviously fake (e.g. iceblink-lab-access / iceblink-lab-secret), live in
   .env.example, and must never be reused anywhere else.
 
 ## AWS and Terraform
-- Least privilege: Floe's role can only read. The data-writing role is separate and short-lived.
-- Everything is tagged project=floe-lab, owner, and expires-on.
+- Least privilege: Iceblink's role can only read. The data-writing role is separate and short-lived.
+- Everything is tagged project=iceblink-lab, owner, and expires-on.
 - Cost guardrails are code: an AWS Budget alarm, an Athena per-query scan limit, S3 lifecycle
   expiry, and auto-shutdown on any EC2 instance.
 - `make aws-down` destroys everything `make aws-up` created. Never leave state behind.

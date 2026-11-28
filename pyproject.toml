@@ -1,7 +1,7 @@
 [project]
-name = "floe-lab"
+name = "iceblink-lab"
 version = "0.0.0"
-description = "Test bench for Floe: storage, catalog, data with known answers, and benchmarks."
+description = "Test bench for Iceblink: storage, catalog, data with known answers, and benchmarks."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]

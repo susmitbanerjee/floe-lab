@@ -1,9 +1,9 @@
-"""Run the checks' queries through a running Floe and compare with the expected answers.
+"""Run the checks' queries through the running engine (Iceblink) and compare with expectations.
 
-    python -m checks.run_floe --profile ci [--dsn postgresql://127.0.0.1:5432/lake]
+    python -m checks.run_engine --profile ci [--dsn postgresql://127.0.0.1:5432/lake]
 
 Prints one line per query (ok, fail with the first differing row, or error with SQLSTATE) and
-exits 1 on any failure. For region_7d it also runs EXPLAIN ANALYZE and compares Floe's
+exits 1 on any failure. For region_7d it also runs EXPLAIN ANALYZE and compares the engine's
 files_scanned with files.json: equal is a partition-only scan, lower is fine because the answer
 already matched, and higher fails.
 """
@@ -69,7 +69,7 @@ class PsycopgDatabase:
 
 
 def files_scanned(plan: Sequence[tuple[Any, ...]]) -> int | None:
-    """The first `files_scanned=N` in the plan text, as Floe's own tests/lab.rs reads it."""
+    """The first `files_scanned=N` in the plan text, as Iceblink's own tests/lab.rs reads it."""
     text = "\n".join(" ".join(render(cell) for cell in row) for row in plan)
     match = FILES_SCANNED.search(text)
     return int(match.group(1)) if match else None
@@ -118,21 +118,24 @@ def run(db: Database, profile: str) -> list[Outcome]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="python -m checks.run_floe", description=__doc__)
+    parser = argparse.ArgumentParser(prog="python -m checks.run_engine", description=__doc__)
     parser.add_argument("--profile", required=True)
-    parser.add_argument("--dsn", default=os.environ.get("FLOE_DSN", DEFAULT_DSN))
+    parser.add_argument("--dsn", default=os.environ.get("ICEBLINK_DSN", DEFAULT_DSN))
     args = parser.parse_args(argv)
     try:
         db = PsycopgDatabase(args.dsn)
     except Exception as exc:  # any connection failure: say what to do and stop
-        print(f"cannot connect to Floe at {args.dsn}: {exc}", file=sys.stderr)
-        print("Start `floe serve`, or set FLOE_DSN=postgresql://host:port/db.", file=sys.stderr)
+        print(f"cannot connect to the engine at {args.dsn}: {exc}", file=sys.stderr)
+        print(
+            "Start `iceblink serve`, or set ICEBLINK_DSN=postgresql://host:port/db.",
+            file=sys.stderr,
+        )
         return 1
     outcomes = run(db, args.profile)
     for outcome in outcomes:
         print(outcome.line())
     bad = sum(o.status != "ok" for o in outcomes)
-    print(f"check-floe: {len(outcomes) - bad} ok, {bad} failed")
+    print(f"check-engine: {len(outcomes) - bad} ok, {bad} failed")
     return 1 if bad else 0
 
 

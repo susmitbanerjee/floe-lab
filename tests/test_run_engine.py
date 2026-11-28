@@ -1,4 +1,4 @@
-"""Tests for checks.run_floe with a fake database (no Floe, no network)."""
+"""Tests for checks.run_engine with a fake database (no engine, no network)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 
 from checks.compare import write_csv
-from checks.run_floe import Outcome, QueryError, check_query, files_scanned
+from checks.run_engine import Outcome, QueryError, check_query, files_scanned
 
 SQL = "SELECT region, count(*) AS count, sum(amount) AS sum FROM t GROUP BY region ORDER BY region;"
 

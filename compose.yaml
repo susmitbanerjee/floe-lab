@@ -1,7 +1,7 @@
-# floe-lab stack: an S3-compatible store (RustFS) and the Lakekeeper Iceberg REST catalog.
+# iceblink-lab stack: an S3-compatible store (RustFS) and the Lakekeeper Iceberg REST catalog.
 # Published ports bind to 127.0.0.1 only. Postgres is not published at all.
 # Values come from .env (see .env.example); `make up` creates .env when it is missing.
-name: floe-lab
+name: iceblink-lab
 
 x-hardening: &hardening
   security_opt:
@@ -20,8 +20,8 @@ services:
     image: rustfs/rustfs@sha256:69bd3c4d8d79b74723bfd68c9fbd9085155d4d4b44a5a136d87502f3075cc68c
     <<: *hardening
     environment:
-      RUSTFS_ACCESS_KEY: ${FLOE_LAB_S3_ACCESS_KEY:?set it in .env}
-      RUSTFS_SECRET_KEY: ${FLOE_LAB_S3_SECRET_KEY:?set it in .env}
+      RUSTFS_ACCESS_KEY: ${ICEBLINK_LAB_S3_ACCESS_KEY:?set it in .env}
+      RUSTFS_SECRET_KEY: ${ICEBLINK_LAB_S3_SECRET_KEY:?set it in .env}
       RUSTFS_ADDRESS: 0.0.0.0:9000
       RUSTFS_CONSOLE_ENABLE: "false"
       RUSTFS_VOLUMES: /data
@@ -43,7 +43,7 @@ services:
     environment:
       POSTGRES_USER: lakekeeper
       POSTGRES_DB: lakekeeper
-      POSTGRES_PASSWORD: ${FLOE_LAB_PG_PASSWORD:?set it in .env}
+      POSTGRES_PASSWORD: ${ICEBLINK_LAB_PG_PASSWORD:?set it in .env}
     volumes:
       - postgres-data:/var/lib/postgresql
     healthcheck:

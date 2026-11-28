@@ -7,7 +7,7 @@ import pytest
 from datagen.smoke import payload, run_checks
 
 # sha256 of payload("smoke/boto3/object.bin", 4096). If this changes, every run moves new bytes.
-GOLDEN_SHA256 = "06dddb04f53bc83a6522bcab1cfa2c1f30a4427736e42093d010e7b0b03526cf"
+GOLDEN_SHA256 = "fa68e1a0ab37cc14135403e2127364f4c8d8d39a7b9d97fe6bc010ca0b50d1c5"
 
 
 def test_payload_is_deterministic() -> None:

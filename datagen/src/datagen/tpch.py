@@ -122,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
         "tables": tables,
         "tool_versions": {
             "python": platform.python_version(),
-            **{n: version(n) for n in ("floe-lab", "duckdb", "pyarrow", "pyiceberg")},
+            **{n: version(n) for n in ("iceblink-lab", "duckdb", "pyarrow", "pyiceberg")},
         },
     }
     DATA_DIR.mkdir(exist_ok=True)

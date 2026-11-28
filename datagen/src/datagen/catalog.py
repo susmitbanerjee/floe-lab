@@ -51,8 +51,8 @@ def open_catalog(settings: Settings, kind: str = "lab") -> Catalog:
     if kind == "glue":
         if not (settings.glue_region and settings.glue_warehouse):
             raise SettingsError(
-                "--catalog glue needs FLOE_LAB_GLUE_REGION and FLOE_LAB_GLUE_WAREHOUSE in .env "
-                "(see .env.example) and AWS credentials from your own profile or SSO session."
+                "--catalog glue needs ICEBLINK_LAB_GLUE_REGION and ICEBLINK_LAB_GLUE_WAREHOUSE in "
+                ".env (see .env.example) and AWS credentials from your own profile or SSO session."
             )
         return load_catalog(
             "glue",

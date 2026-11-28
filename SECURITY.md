@@ -2,8 +2,8 @@
 
 ## Lab credentials are fake
 
-The credentials in `.env.example` and in the lab stack (for example `floe-lab-access` /
-`floe-lab-secret`) are deliberately fake and only work against the local lab. They are not
+The credentials in `.env.example` and in the lab stack (for example `iceblink-lab-access` /
+`iceblink-lab-secret`) are deliberately fake and only work against the local lab. They are not
 secrets. Never reuse them anywhere else, and never put a real credential in this repository.
 AWS access always comes from your own profile or SSO session.
 

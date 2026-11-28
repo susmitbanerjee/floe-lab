@@ -1,1 +1,1 @@
-"""Deterministic data generators and writers for floe-lab."""
+"""Deterministic data generators and writers for iceblink-lab."""

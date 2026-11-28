@@ -5,7 +5,7 @@
 
 ## Context
 
-Floe's checks compare its answers with known ones, so `sales.orders` must hold the same bytes on
+Iceblink's checks compare its answers with known ones, so `sales.orders` must hold the same bytes on
 every run and every machine. The design asks for rows spread across Asia/Kolkata calendar days,
 stored as UTC `timestamptz`, and a partition spec of `day(created_at)`.
 
@@ -25,7 +25,7 @@ saving) runs from 18:30 UTC the previous day to 18:30 UTC, so it can never fill 
 ## Decision
 
 Option 1, chosen by the project owner on 2026-11-28: keep the Kolkata calendar day and let
-partitions fall on UTC days. A tenant in India sees its own days, and Floe has to prune a
+partitions fall on UTC days. A tenant in India sees its own days, and Iceblink has to prune a
 Kolkata-day window that straddles UTC partitions, which is the realistic case.
 
 How the data is made:
@@ -52,6 +52,6 @@ How the data is made:
   Arrow bytes per row. With the 23/77 split, a day lands in about `files_per_day` to
   `files_per_day + 1` files. The manifest records the real counts, and nobody types them.
 - A 7-day query over Kolkata days touches 8 UTC partitions, and reads part of the two end
-  ones. That is expected, and Floe's pruning must handle it.
+  ones. That is expected, and Iceblink's pruning must handle it.
 - Changing the hash chain, the weights, the epoch-day key or the column ids changes every
   golden hash. That needs a new ADR and regenerated goldens (`make golden`).

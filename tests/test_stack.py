@@ -74,7 +74,7 @@ def test_make_up_from_scratch(first_up: tuple[subprocess.CompletedProcess[str], 
     result, seconds = first_up
     assert succeeded(result)
     for line in (
-        "bucket floe-lab: created",
+        "bucket iceblink-lab: created",
         "lakekeeper bootstrap: created",
         "warehouse lab: created",
     ):
@@ -91,7 +91,7 @@ def test_second_make_up_is_a_no_op(
     result = run("make", "up")
     assert succeeded(result)
     for line in (
-        "bucket floe-lab: exists",
+        "bucket iceblink-lab: exists",
         "lakekeeper bootstrap: exists",
         "warehouse lab: exists",
     ):

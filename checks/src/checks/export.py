@@ -1,8 +1,8 @@
-"""Copy expected answers into the Floe repository's tests/expected/.
+"""Copy expected answers into the engine repository's tests/expected/.
 
-    python -m checks.export --floe ../floe
+    python -m checks.export --engine ../iceblink
 
-Writes only inside <floe>/tests/expected/: tpch-sf<SF>/ (qNN.sql, qNN.csv, LICENSE-duckdb,
+Writes only inside <engine>/tests/expected/: tpch-sf<SF>/ (qNN.sql, qNN.csv, LICENSE-duckdb,
 PROVENANCE.json), orders-<profile>/ (region_7d.csv, files.json, PROVENANCE.json) and README.md.
 It overwrites those files and leaves everything else, such as KNOWN_FAILURES.md, alone.
 """
@@ -23,15 +23,17 @@ TPCH_FILES = ("LICENSE-duckdb", "PROVENANCE.json")
 
 
 class ExportError(RuntimeError):
-    """The target is not a Floe checkout or the answers are missing."""
+    """The target is not the engine's checkout or the answers are missing."""
 
 
 def export(
-    floe: Path, expected: Path = EXPECTED_DIR, queries: Path = TPCH_QUERIES_DIR
+    engine: Path, expected: Path = EXPECTED_DIR, queries: Path = TPCH_QUERIES_DIR
 ) -> list[Path]:
-    if not (floe / "Cargo.toml").is_file() or not (floe / "tests").is_dir():
-        raise ExportError(f"{floe} does not look like the floe repository (no Cargo.toml, tests/)")
-    target = floe / "tests" / "expected"
+    if not (engine / "Cargo.toml").is_file() or not (engine / "tests").is_dir():
+        raise ExportError(
+            f"{engine} does not look like the engine repository (no Cargo.toml, tests/)"
+        )
+    target = engine / "tests" / "expected"
     written: list[Path] = []
 
     def copy(source: Path, dest: Path) -> None:
@@ -68,9 +70,9 @@ def render_readme(tpch: dict[str, dict[str, Any]], orders: dict[str, dict[str, A
     lines = [
         "# Expected answers",
         "",
-        "Written by floe-lab's `make export`; do not edit by hand. floe-lab computes every",
-        "answer with an engine other than Floe and records how in each `PROVENANCE.json`",
-        "(floe-lab `docs/adr/0003-expected-answers.md`).",
+        "Written by iceblink-lab's `make export`; do not edit by hand. iceblink-lab computes",
+        "every answer with an engine other than Iceblink and records how in each",
+        "`PROVENANCE.json` (iceblink-lab `docs/adr/0003-expected-answers.md`).",
         "",
         "**Format:** comma-separated with a header row and standard CSV quoting. An empty field",
         "is NULL. Numbers with a fractional part compare within 0.01; integers and strings compare",
@@ -98,7 +100,7 @@ def render_readme(tpch: dict[str, dict[str, Any]], orders: dict[str, dict[str, A
         "",
         "## sales.orders",
         "",
-        "`region_7d.csv` answers floe-lab's `checks/queries/region_7d.sql`. `files.json` holds",
+        "`region_7d.csv` answers iceblink-lab's `checks/queries/region_7d.sql`. `files.json` holds",
         "the number of data files whose `day(created_at)` partition overlaps the query's range:",
         "a scan that prunes by partition only must read exactly that many, and one that prunes",
         "further may read fewer but must give the same answer.",
@@ -116,7 +118,7 @@ def render_readme(tpch: dict[str, dict[str, Any]], orders: dict[str, dict[str, A
         "",
         "## Known failures",
         "",
-        "[`KNOWN_FAILURES.md`](KNOWN_FAILURES.md) is Floe's own file; `make export` never",
+        "[`KNOWN_FAILURES.md`](KNOWN_FAILURES.md) is Iceblink's own file; `make export` never",
         "changes it.",
         "",
     ]
@@ -125,14 +127,14 @@ def render_readme(tpch: dict[str, dict[str, Any]], orders: dict[str, dict[str, A
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m checks.export", description=__doc__)
-    parser.add_argument("--floe", type=Path, required=True, help="path to the floe checkout")
+    parser.add_argument("--engine", type=Path, required=True, help="path to the engine checkout")
     args = parser.parse_args(argv)
     try:
-        written = export(args.floe.resolve())
+        written = export(args.engine.resolve())
     except ExportError as exc:
         print(f"{exc}", file=sys.stderr)
         return 1
-    target = args.floe.resolve() / "tests" / "expected"
+    target = args.engine.resolve() / "tests" / "expected"
     for path in written:
         print(path.relative_to(target).as_posix())
     print(f"export: {len(written)} files written under {target}")

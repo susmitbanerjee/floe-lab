@@ -69,7 +69,7 @@ def warehouse_request(settings: Settings) -> JsonDict:
             "flavor": "s3-compat",
             "bucket": settings.bucket,
             "key-prefix": settings.key_prefix,
-            "endpoint": settings.s3_internal_endpoint,
+            "endpoint": settings.warehouse_endpoint,
             "region": settings.s3_region,
             "path-style-access": True,
             "sts-enabled": False,
@@ -131,8 +131,16 @@ def ensure_warehouse(http: Http, settings: Settings) -> str:
 
 def _check_profile(warehouse: JsonDict, settings: Settings) -> None:
     profile = warehouse.get("storage-profile", {})
-    actual = (profile.get("bucket"), str(profile.get("key-prefix", "")).strip("/"))
-    wanted = (settings.bucket, settings.key_prefix.strip("/"))
+    actual = (
+        profile.get("bucket"),
+        str(profile.get("key-prefix", "")).strip("/"),
+        str(profile.get("endpoint", "")).rstrip("/"),
+    )
+    wanted = (
+        settings.bucket,
+        settings.key_prefix.strip("/"),
+        settings.warehouse_endpoint.rstrip("/"),
+    )
     if actual != wanted:
         raise BootstrapError(
             f"warehouse {settings.warehouse!r} exists on {actual}, not {wanted}. "

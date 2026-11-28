@@ -24,4 +24,9 @@ $ make help
   append     Append DAYS=n days after the last one, or ROWS=n rows to the last day
   data-tpch  Write the 8 TPC-H tables at SF=0.01 (or SF=1) into namespace tpch_sf<SF>
   golden     Regenerate tests/golden/unit.json (only when ADR 0002's data model changes)
+  check      Write checks/expected/PROFILE/ answers with DuckDB over pyiceberg's file list
+  check-tpch Write the 22 TPC-H queries and answers for SF=0.01 or SF=1 from DuckDB
+  verify     Recompute PROFILE's and TPC-H answers and fail on any difference
+  check-floe Run PROFILE's queries through Floe (FLOE_DSN) and report pass or fail per query
+  export     Copy TPC-H and orders answers into FLOE=../floe tests/expected/ (nothing else)
 ```

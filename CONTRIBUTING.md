@@ -32,6 +32,11 @@ Make is the only entry point. `make help` lists every target:
 | `append` | `DAYS=n` adds days after the last one; `ROWS=n` adds rows to the last day. One snapshot each |
 | `data-tpch` | TPC-H at `SF=0.01` (default) or `SF=1` into namespace `tpch_sf0_01` / `tpch_sf1` |
 | `golden` | Regenerate `tests/golden/unit.json`; only when ADR 0002's data model changes |
+| `check` | Expected answers for `PROFILE` in `checks/expected/<profile>/`: DuckDB over the Parquet files pyiceberg lists, plus `files.json` and `PROVENANCE.json` |
+| `check-tpch` | The 22 TPC-H queries and answers for `SF=0.01` or `SF=1` from DuckDB's tpch extension |
+| `verify` | Recompute `PROFILE`'s and the TPC-H answers and fail on any difference |
+| `check-floe` | Run `PROFILE`'s queries through a running Floe (`FLOE_DSN`, default `postgresql://127.0.0.1:5432/lake`) |
+| `export` | Copy the TPC-H and orders answers into `FLOE=../floe`'s `tests/expected/` and nothing else |
 
 Before you open a pull request, run `make lint test` and paste the output in the description.
 

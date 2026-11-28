@@ -1,0 +1,24 @@
+{
+  "total_data_files": 6,
+  "queries": {
+    "region_7d": {
+      "created_at_from": "2026-11-12 00:00:00+05:30",
+      "created_at_before": null,
+      "partitions": [
+        "2026-11-16",
+        "2026-11-17",
+        "2026-11-18"
+      ],
+      "data_files": 6
+    },
+    "late_day": {
+      "created_at_from": "2026-11-18 00:00:00+05:30",
+      "created_at_before": "2026-11-19 00:00:00+05:30",
+      "partitions": [
+        "2026-11-17",
+        "2026-11-18"
+      ],
+      "data_files": 5
+    }
+  }
+}

@@ -34,9 +34,10 @@ repo_files = $(shell git ls-files --cached --others --exclude-standard -- $(1))
 PROFILE ?= small
 CATALOG ?= lab
 SF ?= 0.01
+FLOE ?= ../floe
 FORCE_FLAG = $(if $(filter 1,$(FORCE)),--force)
 
-.PHONY: help setup lint test fmt up down reset logs smoke test-stack data append data-tpch golden
+.PHONY: help setup lint test fmt up down reset logs smoke test-stack data append data-tpch golden \n	check check-tpch verify check-floe export
 
 help: ## List every target with its one-line description
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z][a-z-]*:.*## / {printf "  %-10s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -100,6 +101,21 @@ data-tpch: .env ## Write the 8 TPC-H tables at SF=0.01 (or SF=1) into namespace 
 
 golden: ## Regenerate tests/golden/unit.json (only when ADR 0002's data model changes)
 	$(UV_RUN) python -m datagen.generate golden --out tests/golden/unit.json
+
+check: .env ## Write checks/expected/PROFILE/ answers with DuckDB over pyiceberg's file list
+	$(UV_RUN) --env-file .env python -m checks.compute orders --profile $(PROFILE) --out checks/expected/$(PROFILE)
+
+check-tpch: ## Write the 22 TPC-H queries and answers for SF=0.01 or SF=1 from DuckDB
+	$(UV_RUN) python -m checks.compute tpch --sf $(SF) --out checks/expected/tpch-sf$(SF)
+
+verify: .env ## Recompute PROFILE's and TPC-H answers and fail on any difference
+	$(UV_RUN) --env-file .env python -m checks.compute verify --profile $(PROFILE)
+
+check-floe: ## Run PROFILE's queries through Floe (FLOE_DSN) and report pass or fail per query
+	$(UV_RUN) python -m checks.run_floe --profile $(PROFILE)
+
+export: ## Copy TPC-H and orders answers into FLOE=../floe tests/expected/ (nothing else)
+	$(UV_RUN) python -m checks.export --floe $(FLOE)
 
 # $(call lint_files,name,git pathspecs,image and command): run the tool on matching files, or skip.
 define lint_files

@@ -18,6 +18,12 @@ Make is the only entry point. `make help` lists every target:
 | `lint`  | ruff format and check, mypy, shellcheck, hadolint, `docker compose config`, terraform fmt and tflint (when `aws/` has `.tf` files), gitleaks |
 | `test`  | pytest, skipping tests marked `stack` |
 | `fmt`   | ruff format and safe fixes |
+| `up`    | Start RustFS, Postgres and Lakekeeper on 127.0.0.1, bootstrap the bucket and the `lab` warehouse, run the smoke test. Creates `.env` from `.env.example` if missing |
+| `down`  | Stop the stack, keep its volumes |
+| `reset` | Stop the stack and delete its volumes |
+| `logs`  | Follow the stack's logs |
+| `smoke` | Rerun the S3 and catalog smoke test |
+| `test-stack` | Stack tests; they run `make reset`, so they delete the lab's data |
 
 Before you open a pull request, run `make lint test` and paste the output in the description.
 

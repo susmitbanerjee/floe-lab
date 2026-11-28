@@ -6,7 +6,12 @@ readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 requires-python = "==3.14.*"
-dependencies = []
+dependencies = [
+  "boto3>=1.44.13",
+  "pyarrow>=26.0.1",
+  "pyiceberg>=0.12.0",
+  "requests>=2.34.2",
+]
 
 [dependency-groups]
 dev = [
@@ -14,6 +19,8 @@ dev = [
   "pre-commit>=4.7.0",
   "pytest>=9.2.0",
   "ruff>=0.17.6",
+  "types-boto3[s3]>=1.44.13",
+  "types-requests>=2.33.0.20261030",
 ]
 
 [build-system]
@@ -34,14 +41,21 @@ src = ["datagen/src", "checks/src", "tests"]
 select = ["E", "F", "I", "B", "UP", "S", "SIM", "PT"]
 
 [tool.ruff.lint.per-file-ignores]
-# pytest uses bare asserts.
-"tests/**" = ["S101"]
+# pytest uses bare asserts, and tests use fake credentials.
+"tests/**" = ["S101", "S106"]
+# Stack tests run `make` and `docker` from PATH with fixed arguments, by design.
+"tests/test_stack.py" = ["S603"]
 
 [tool.mypy]
 strict = true
 files = ["datagen/src", "checks/src", "tests"]
 mypy_path = ["datagen/src", "checks/src"]
 explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+# pyarrow ships no type information (no py.typed, no stubs package we pin).
+module = ["pyarrow", "pyarrow.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

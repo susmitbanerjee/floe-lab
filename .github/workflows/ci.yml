@@ -41,8 +41,21 @@ jobs:
       - run: make test
 
   stack:
-    # Placeholder. Later changes bring up the Compose stack here and run pytest -m stack.
+    # Brings up the Compose stack from scratch (make up, twice) and runs the stack tests.
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 20
     steps:
-      - run: echo "No stack services yet; nothing to test."
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          version-file: pyproject.toml
+      - run: make setup
+      - run: make test-stack
+      - name: Show stack logs
+        if: failure()
+        run: docker compose --env-file .env.example logs --no-color
+      - name: Remove the stack
+        if: always()
+        run: make reset

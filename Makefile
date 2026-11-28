@@ -24,13 +24,16 @@ GITLEAKS_IMAGE := ghcr.io/gitleaks/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a
 # Read-only mount of the repo, no network.
 DOCKER_RUN := docker run --rm --network none -v "$(CURDIR):/src:ro" -w /src
 
+# Compose for targets that only stop or inspect the stack: .env when present, else the example.
+COMPOSE := docker compose --env-file $(if $(wildcard .env),.env,.env.example)
+
 # Files git tracks or would track (respects .gitignore, so .venv and data/ are skipped).
 repo_files = $(shell git ls-files --cached --others --exclude-standard -- $(1))
 
-.PHONY: help setup lint test fmt
+.PHONY: help setup lint test fmt up down reset logs smoke test-stack
 
 help: ## List every target with its one-line description
-	@awk 'BEGIN {FS = ":.*## "} /^[a-z][a-z-]*:.*## / {printf "  %-8s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*## "} /^[a-z][a-z-]*:.*## / {printf "  %-10s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 setup: ## Create .venv from uv.lock (Python, dev tools, floe-lab packages)
 	uv sync --locked
@@ -41,7 +44,7 @@ lint: ## Run every linter and secret scan; fails on the first problem
 	$(UV_RUN) python -m mypy
 	$(call lint_files,shellcheck,'*.sh',$(SHELLCHECK_IMAGE))
 	$(call lint_files,hadolint,'*Dockerfile',$(HADOLINT_IMAGE) hadolint)
-	docker compose config -q
+	docker compose --env-file .env.example config -q
 	@if compgen -G 'aws/*.tf' > /dev/null; then \
 	  $(DOCKER_RUN) -w /src/aws $(TERRAFORM_IMAGE) fmt -check -recursive -diff; \
 	  $(DOCKER_RUN) -w /src/aws $(TFLINT_IMAGE) --recursive; \
@@ -54,6 +57,27 @@ test: ## Run unit tests (everything not marked stack)
 fmt: ## Format code and apply safe lint fixes
 	$(UV_RUN) ruff format .
 	$(UV_RUN) ruff check --fix .
+
+up: ## Start the stack, bootstrap the bucket and warehouse, then run the smoke test
+	@if [ ! -f .env ]; then cp .env.example .env; echo "up: created .env from .env.example (fake lab values)"; fi
+	docker compose up --wait --wait-timeout 120
+	$(UV_RUN) --env-file .env python -m datagen.bootstrap
+	$(UV_RUN) --env-file .env python -m datagen.smoke
+
+down: ## Stop the stack and keep its data volumes
+	$(COMPOSE) down
+
+reset: ## Stop the stack and delete its data volumes
+	$(COMPOSE) down --volumes --remove-orphans
+
+logs: ## Follow the stack's logs
+	$(COMPOSE) logs --follow --tail 200
+
+smoke: ## Rerun the S3 and catalog smoke test against the running stack
+	$(UV_RUN) --env-file .env python -m datagen.smoke
+
+test-stack: ## Run the stack tests (they reset the stack and delete its data volumes)
+	$(UV_RUN) python -m pytest -m stack
 
 # $(call lint_files,name,git pathspecs,image and command): run the tool on matching files, or skip.
 define lint_files

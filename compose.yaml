@@ -1,5 +1,91 @@
-# floe-lab stack. Later changes add services; every one gets a healthcheck and
-# publishes ports on 127.0.0.1 only.
+# floe-lab stack: an S3-compatible store (RustFS) and the Lakekeeper Iceberg REST catalog.
+# Published ports bind to 127.0.0.1 only. Postgres is not published at all.
+# Values come from .env (see .env.example); `make up` creates .env when it is missing.
 name: floe-lab
 
-services: {}
+x-hardening: &hardening
+  security_opt:
+    - no-new-privileges:true
+
+x-lakekeeper-env: &lakekeeper-env
+  LAKEKEEPER__PG_DATABASE_URL_WRITE: ${LAKEKEEPER__PG_DATABASE_URL_WRITE:?set it in .env}
+  LAKEKEEPER__PG_ENCRYPTION_KEY: ${LAKEKEEPER__PG_ENCRYPTION_KEY:?set it in .env}
+  # Lab only: no authentication (no OpenID provider) and no authorization.
+  LAKEKEEPER__AUTHZ_BACKEND: allowall
+  RUST_LOG: info
+
+services:
+  rustfs:
+    # rustfs/rustfs:1.0.7
+    image: rustfs/rustfs@sha256:69bd3c4d8d79b74723bfd68c9fbd9085155d4d4b44a5a136d87502f3075cc68c
+    <<: *hardening
+    environment:
+      RUSTFS_ACCESS_KEY: ${FLOE_LAB_S3_ACCESS_KEY:?set it in .env}
+      RUSTFS_SECRET_KEY: ${FLOE_LAB_S3_SECRET_KEY:?set it in .env}
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ENABLE: "false"
+      RUSTFS_VOLUMES: /data
+    volumes:
+      - rustfs-data:/data
+    ports:
+      - 127.0.0.1:9000:9000
+    healthcheck:
+      test: [CMD, curl, -fsS, -o, /dev/null, http://127.0.0.1:9000/health]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  postgres:
+    # postgres:18.7-alpine
+    image: postgres@sha256:0115267ab5a509022df9319c77be365cef335adb71556c75f60f5360ee247e71
+    <<: *hardening
+    environment:
+      POSTGRES_USER: lakekeeper
+      POSTGRES_DB: lakekeeper
+      POSTGRES_PASSWORD: ${FLOE_LAB_PG_PASSWORD:?set it in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: [CMD, pg_isready, -U, lakekeeper, -d, lakekeeper]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  lakekeeper-migrate:
+    # quay.io/lakekeeper/catalog:v0.15.1
+    image: quay.io/lakekeeper/catalog@sha256:22dcb6044c106a962c242b70051bd226bd50c9134c763121d8713c37fe9a70ec
+    <<: *hardening
+    command: [migrate]
+    environment: *lakekeeper-env
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  lakekeeper:
+    # quay.io/lakekeeper/catalog:v0.15.1
+    image: quay.io/lakekeeper/catalog@sha256:22dcb6044c106a962c242b70051bd226bd50c9134c763121d8713c37fe9a70ec
+    <<: *hardening
+    command: [serve]
+    environment: *lakekeeper-env
+    ports:
+      - 127.0.0.1:8181:8181
+    healthcheck:
+      test: [CMD, /home/nonroot/lakekeeper, healthcheck]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+    depends_on:
+      lakekeeper-migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      rustfs:
+        condition: service_healthy
+
+volumes:
+  rustfs-data:
+  postgres-data:

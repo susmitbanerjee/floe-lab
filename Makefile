@@ -48,6 +48,7 @@ setup: ## Create .venv from uv.lock (Python, dev tools, iceblink-lab packages)
 	uv sync --locked
 
 lint: ## Run every linter and secret scan; fails on the first problem
+	bash scripts/check-legacy-name.sh
 	$(UV_RUN) ruff format --check .
 	$(UV_RUN) ruff check .
 	$(UV_RUN) python -m mypy

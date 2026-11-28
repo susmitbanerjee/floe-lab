@@ -19,7 +19,7 @@ Make is the only entry point. `make help` lists every target:
 | Target  | What it does |
 | ------- | ------------ |
 | `setup` | Create `.venv` from `uv.lock` |
-| `lint`  | ruff format and check, mypy, shellcheck, hadolint, `docker compose config`, terraform fmt and tflint (when `aws/` has `.tf` files), gitleaks |
+| `lint`  | the legacy-name guard (`scripts/check-legacy-name.sh`, ADR 0004), ruff format and check, mypy, shellcheck, hadolint, `docker compose config`, terraform fmt and tflint (when `aws/` has `.tf` files), gitleaks |
 | `test`  | pytest, skipping tests marked `stack` |
 | `fmt`   | ruff format and safe fixes |
 | `up`    | Start RustFS, Postgres and Lakekeeper on 127.0.0.1, bootstrap the bucket and the `lab` warehouse, run the smoke test. Creates `.env` from `.env.example` if missing |
